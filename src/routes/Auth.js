@@ -9,7 +9,8 @@ import {
 export default function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [newAccount, setNewAccount] = useState(false);
+  const [newAccount, setNewAccount] = useState(true);
+  const [error, setError] = useState("");
 
   const auth = getAuth();
 
@@ -29,6 +30,7 @@ export default function Auth() {
           const errorCode = error.code;
           const errorMessage = error.message;
           console.log(errorCode, errorMessage);
+          setError(errorMessage);
           // ..
         });
     } else {
@@ -44,6 +46,7 @@ export default function Auth() {
           const errorCode = error.code;
           const errorMessage = error.message;
           console.log(errorCode, errorMessage);
+          setError(errorMessage);
         });
     }
     setEmail(email);
@@ -79,6 +82,7 @@ export default function Auth() {
         ></input>
         <button>{newAccount ? "create Account" : "Login in"}</button>
       </form>
+      {error}
     </div>
   );
 }
