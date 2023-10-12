@@ -6,7 +6,6 @@ import Post from '../components/Post';
 const Home = ()=>{
   const [post,setPost] = useState('');
   const [posts,setPosts] = useState([]);
- 
   
   const onChange = (e)=>{
     //const val = e.target.value; //ECMA Script 2012
@@ -22,7 +21,6 @@ const Home = ()=>{
           date: serverTimestamp()
         });
         console.log("Document written with ID: ", docRef.id);
-        setPost("");
       } catch(e){
       console.log(e);
     }
@@ -42,8 +40,6 @@ const Home = ()=>{
     getPosts();
   },[])
 
-  
-
   return(
     <div>
       <form onSubmit={onSubmit}>
@@ -52,7 +48,7 @@ const Home = ()=>{
       </form>
       <ul>
       {
-        posts.map(item=><Post key={item.id} postObj={item}/>)
+        posts.map(item=><Post key={item.id} postObj={item.content}/>)
       }
       </ul>
     </div>
