@@ -6,7 +6,7 @@ import Home from "../routes/Home";
 import Profile from '../routes/Profile';
 import Nav from './Nav';
 
-export default function AppRouter({ isLoggedIn }) {
+export default function AppRouter({ isLoggedIn ,userObj}) {
   // const [isLoggedIn, setIsLoggedIn] = useState(false);
   return (
     <>
@@ -14,7 +14,7 @@ export default function AppRouter({ isLoggedIn }) {
     <Routes>
       {isLoggedIn ? (
         <>
-        <Route path="/" element={<Home />}></Route>
+        <Route path="/" element={<Home userObj={userObj}/>}></Route>
         <Route path="/profile" element={<Profile/>}></Route>
         </>
       ) : (

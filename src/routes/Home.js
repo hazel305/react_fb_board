@@ -3,9 +3,10 @@ import { db } from '../firebase';
 import { collection, getDocs, addDoc, serverTimestamp } from "firebase/firestore"; 
 import Post from '../components/Post';
 
-const Home = ()=>{
+const Home = ({userObj})=>{
   const [post,setPost] = useState('');
   const [posts,setPosts] = useState([]);
+  console.log(userObj);
  
   
   const onChange = (e)=>{
@@ -19,7 +20,8 @@ const Home = ()=>{
     try{
         const docRef = await addDoc(collection(db, "posts"), {
           content: post,
-          date: serverTimestamp()
+          date: serverTimestamp(),
+          uid: userObj
         });
         console.log("Document written with ID: ", docRef.id);
         setPost("");
@@ -32,7 +34,7 @@ const Home = ()=>{
     querySnapshot.forEach((doc) => {
       const postObj = {
         ...doc.data(),
-        id:doc.id
+        id:doc.uid
       }      
       setPosts((prev)=>[postObj,...prev]);
     });
