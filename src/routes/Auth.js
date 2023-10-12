@@ -62,6 +62,11 @@ export default function Auth() {
       setPassword(value);
     }
   };
+
+
+  const toggleAccount = ()=>{
+     setNewAccount((prev)=>!prev);
+  }
   return (
     <div>
       <h2>Auth</h2>
@@ -80,9 +85,14 @@ export default function Auth() {
           value={password}
           onChange={handleChange}
         ></input>
-        <button>{newAccount ? "create Account" : "Login in"}</button>
+        <button type='submit'>{newAccount ? "회원가입" : "로그인"}</button>
+        <button type="button">{newAccount ? "Google 회원가입" : "Google 로그인"}</button>
       </form>
+
+      <hr/>
+      <button type='button' onClick={toggleAccount}>{newAccount?"로그인":"회원가입"}</button>
       {error}
+     
     </div>
   );
 }
