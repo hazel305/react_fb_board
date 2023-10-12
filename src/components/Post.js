@@ -1,11 +1,17 @@
 import React from 'react';
 
-export default function Post({postObj,id}) {
+export default function Post({postObj,userConfirm}) {
   return (
     <li key={postObj.id}>
         <h4>{postObj.content}</h4>
-        <button>Delete</button>
+        {userConfirm &&
+        <>
+         <button>Delete</button>
         <button>Edit</button>
+        </>}
+        
+       
     </li>
+        
   )
 }

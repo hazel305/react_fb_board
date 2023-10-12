@@ -6,7 +6,7 @@ import Post from '../components/Post';
 const Home = ({userObj})=>{
   const [post,setPost] = useState('');
   const [posts,setPosts] = useState([]);
-  console.log(userObj);
+  // console.log(userObj);
  
   
   const onChange = (e)=>{
@@ -23,10 +23,10 @@ const Home = ({userObj})=>{
           date: serverTimestamp(),
           uid: userObj
         });
-        console.log("Document written with ID: ", docRef.id);
+        // console.log("Document written with ID: ", docRef.id);
         setPost("");
       } catch(e){
-      console.log(e);
+      // console.log(e);
     }
   }
   // const getPosts = async () =>{
@@ -55,7 +55,7 @@ const Home = ({userObj})=>{
     ...doc.data()
   }))
   setPosts(postArr);
-  console.log(postArr);
+  // console.log(postArr);
   });
   },[])
 
@@ -69,7 +69,7 @@ const Home = ({userObj})=>{
       </form>
       <ul>
       {
-        posts.map(item=><Post key={item.id} postObj={item}/>)
+        posts.map(item=><Post key={item.id} postObj={item} userConfirm={item.uid===userObj}/>)
       }
       </ul>
     </div>
