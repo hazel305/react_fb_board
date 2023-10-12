@@ -1,98 +1,92 @@
-import React, { useState } from "react";
-import { authService } from "../firebase";
-import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-} from "firebase/auth";
+import React, {useState} from 'react';
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider,signInWithPopup  } from "firebase/auth";
 
-export default function Auth() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+const Auth = ()=>{
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [newAccount, setNewAccount] = useState(true);
-  const [error, setError] = useState("");
-
+  const [error,setError] = useState('');
   const auth = getAuth();
 
-  const handleSubmit = (e) => {
+  const onSubmit = (e)=>{
     e.preventDefault();
-
-    if (newAccount) {
-      //Create Accoutn 회원가입
+    if(newAccount){
+      //Create Account 회원가입
       createUserWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
-          // Signed in
+          // Signed in 
           const user = userCredential.user;
           console.log(user);
-          // ...
         })
         .catch((error) => {
           const errorCode = error.code;
           const errorMessage = error.message;
           console.log(errorCode, errorMessage);
           setError(errorMessage);
-          // ..
         });
-    } else {
+
+    }else{
       //로그인
       signInWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-          // Signed in
-          const user = userCredential.user;
-          console.log(user);
-          // ...
-        })
-        .catch((error) => {
-          const errorCode = error.code;
-          const errorMessage = error.message;
-          console.log(errorCode, errorMessage);
-          setError(errorMessage);
-        });
-    }
-    setEmail(email);
-    setPassword(password);
-  };
-  const handleChange = (e) => {
-    const {
-      target: { name, value },
-    } = e;
-    if (name === "email") {
-      setEmail(value);
-    } else {
-      setPassword(value);
-    }
-  };
+      .then((userCredential) => {
+        // Signed in 
+        const user = userCredential.user;
+        console.log(user);
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log(errorCode, errorMessage);
+      });
 
-
-  const toggleAccount = ()=>{
-     setNewAccount((prev)=>!prev);
+    }
   }
-  return (
-    <div>
-      <h2>Auth</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="email"
-          name="email"
-          placeholder="email"
-          value={email}
-          onChange={handleChange}
-        ></input>
-        <input
-          type="password"
-          name="password"
-          placeholder="password"
-          value={password}
-          onChange={handleChange}
-        ></input>
-        <button type='submit'>{newAccount ? "회원가입" : "로그인"}</button>
-        <button type="button">{newAccount ? "Google 회원가입" : "Google 로그인"}</button>
-      </form>
 
+  const onChange = (e) =>{
+    // let name = e.target.value;
+    const {target:{name, value}} = e;
+    if(name ==="email"){
+      setEmail(value);
+    }else{
+      setPassword(value);
+    }    
+  }
+  const toggleAccount = () => setNewAccount((prev)=>!prev);
+  const onSocialClick = () =>{
+    const provider = new GoogleAuthProvider();
+    signInWithPopup(auth, provider)
+      .then((result) => {        
+        const credential = GoogleAuthProvider.credentialFromResult(result);
+        const token = credential.accessToken;
+        const user = result.user;
+        console.log(token,user);
+      }).catch((error) => {
+        // Handle Errors here.
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        const email = error.customData.email;
+        const credential = GoogleAuthProvider.credentialFromError(error);
+        console.log(errorCode,errorMessage,email,credential);
+      });
+
+  }
+  return(
+    <div>
+      <form onSubmit={onSubmit}>
+        <p>
+        <input name="email" type="email" placeholder='email' value={email} onChange={onChange}/>
+        <input name="password" type="password" placeholder='password' value={password} onChange={onChange}/>
+        </p>
+        <button type="submit">{newAccount ? "계정생성" : "로그인"} </button>
+        <button type="button" onClick={onSocialClick}>{newAccount ? "구글로 계정 생성" : "구글로 로그인"}</button>
+      </form>
       <hr/>
-      <button type='button' onClick={toggleAccount}>{newAccount?"로그인":"회원가입"}</button>
+      <button type="button" onClick={toggleAccount}>{newAccount ? "로그인" : "계정생성"}</button>
       {error}
-     
+
+
     </div>
-  );
+  )
 }
+
+export default Auth;
