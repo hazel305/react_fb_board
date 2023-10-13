@@ -1,16 +1,20 @@
 import React,{useEffect, useState} from 'react';
 import { db } from '../firebase';
 import { collection, addDoc, serverTimestamp, onSnapshot,query,orderBy } from "firebase/firestore"; 
-import { getStorage, ref, uploadString, getDownloadURL   } from "firebase/storage";
+import { getStorage, ref, uploadString, getDownloadURL, deleteObject    } from "firebase/storage";
 import { v4 as uuidv4 } from 'uuid';
 import Post from '../components/Post';
+import { useNavigate } from 'react-router-dom';
 
 const Home = ({userObj})=>{
   const [post,setPost] = useState('');
   const [posts,setPosts] = useState([]);
   //첨부이미지 저장 state
   const [attachment,setAttachment] = useState();
+  // const [attachmentUrl,setAttachmentUrl] = useState('');
   // console.log(userObj);
+
+  const navigate = useNavigate();
 
 
   
@@ -27,7 +31,8 @@ const Home = ({userObj})=>{
     
     uploadString(storageRef, attachment, 'data_url').then(async(snapshot) => {
       console.log('파일 업로드 성공');
-      const attachtmentUrl =await getDownloadURL(storageRef);
+
+      const attachmentUrl = await getDownloadURL(storageRef);
       // console.log(attachtmentUrl);
       try{
         // const docRef = await addDoc(collection(db, "posts"), {
@@ -35,10 +40,13 @@ const Home = ({userObj})=>{
           content: post,
           date: serverTimestamp(),
           uid: userObj,
-          attachtmentUrl
+          attachmentUrl
         });
         // console.log("Document written with ID: ", docRef.id);
         setPost("");
+        attachmentUrl="";
+        // navigate("/");
+       
       } catch(e){
       console.log(e);
     }

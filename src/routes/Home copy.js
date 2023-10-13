@@ -3,6 +3,9 @@ import { db } from '../firebase';
 import { collection, getDocs, addDoc, serverTimestamp, } from "firebase/firestore"; 
 import Post from '../components/Post';
 
+
+
+
 const Home = ()=>{
   const [post,setPost] = useState('');
   const [posts,setPosts] = useState([]);
