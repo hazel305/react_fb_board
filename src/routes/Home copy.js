@@ -1,6 +1,6 @@
 import React,{useEffect, useState} from 'react';
 import { db } from '../firebase';
-import { collection, getDocs, addDoc, serverTimestamp } from "firebase/firestore"; 
+import { collection, getDocs, addDoc, serverTimestamp, } from "firebase/firestore"; 
 import Post from '../components/Post';
 
 const Home = ()=>{
