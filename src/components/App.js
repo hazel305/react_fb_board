@@ -11,7 +11,7 @@ function App() {
 
   useEffect(() => {
     const auth = getAuth();
-    if (init === false) {
+ 
       onAuthStateChanged(auth, (user) => {
         if (user) {
           // 사용자 로그인
@@ -24,8 +24,8 @@ function App() {
         }
         setInit(true);
       });
-    }
-  }, [init]);
+    
+  }, []);
   console.log(userObj);
   return (
     <>{init ? <AppRouter isLoggedIn={isLoggedIn} userObj={userObj} /> : "회원정보 확인중..."}</>

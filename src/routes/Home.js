@@ -1,13 +1,18 @@
 import React,{useEffect, useState} from 'react';
 import { db } from '../firebase';
-import { collection, getDocs, addDoc, serverTimestamp, doc, onSnapshot,query,orderBy } from "firebase/firestore"; 
+import { collection, addDoc, serverTimestamp, onSnapshot,query,orderBy } from "firebase/firestore"; 
+import { getStorage, ref } from "firebase/storage";
+import { v4 as uuidv4 } from 'uuid';
 import Post from '../components/Post';
 
 const Home = ({userObj})=>{
   const [post,setPost] = useState('');
   const [posts,setPosts] = useState([]);
+  //첨부이미지 저장 state
+  const [attachment,setAttachment] = useState();
   // console.log(userObj);
- 
+
+
   
   const onChange = (e)=>{
     //const val = e.target.value; //ECMA Script 2012
@@ -16,39 +21,30 @@ const Home = ({userObj})=>{
   }
   const onSubmit = async (e) =>{
     e.preventDefault();
+    //참조만들기
+    const storage = getStorage();
+    // const imagesRef = ref(storage, 'images'); //경로지정
+    const storageRef = ref(storage, `${userObj}/${uuidv4()}`); //이참조는 저파일이라고 알려줌
 
-    try{
-        const docRef = await addDoc(collection(db, "posts"), {
-          content: post,
-          date: serverTimestamp(),
-          uid: userObj
-        });
-        // console.log("Document written with ID: ", docRef.id);
-        setPost("");
-      } catch(e){
-      // console.log(e);
-    }
+
+
+    // try{
+    //     const docRef = await addDoc(collection(db, "posts"), {
+    //       content: post,
+    //       date: serverTimestamp(),
+    //       uid: userObj
+    //     });
+    //     // console.log("Document written with ID: ", docRef.id);
+    //     setPost("");
+    //   } catch(e){
+    //   // console.log(e);
+    // }
   }
-  // const getPosts = async () =>{
-  //   const querySnapshot = await getDocs(collection(db, "posts"));
-  //   querySnapshot.forEach((doc) => {
-  //     const postObj = {
-  //       ...doc.data(),
-  //       id:doc.id
-  //     }      
-  //     setPosts((prev)=>[postObj,...prev]);
-  //   });
-  // }
-
+ 
   useEffect(()=>{
     // getPosts();
     const q = query(collection(db, "posts"), orderBy("date"));
   onSnapshot(q, (querySnapshot) => {
-  // const postList = [];
-  // querySnapshot.forEach((doc) => {
-  //   postList.push(doc.data().name);
-  // });
-  // console.log("Current cities in CA: ", postList.join(", "));
 
   const postArr=querySnapshot.docs.map((doc)=>({
     id:doc.id,
@@ -59,12 +55,43 @@ const Home = ({userObj})=>{
   });
   },[])
 
+  const onPreviewImgChange = (e)=>{
+     console.log(e.target.files[0]);
+     //const theFile = e.target.files[0];
+     const {target:{files}}= e;
+     const theFile = files[0];
+
+     const reader = new FileReader();
+     reader.onloadend= (e)=>{
+      setAttachment(e.target.result)
+     }
+     reader.readAsDataURL(theFile);
+  }
+  console.log(attachment);
+
+  const onPreviewImgClear  =()=>{
+    setAttachment(null);
+    document.querySelector("#attachment").value=null; //파일에 이름 초기화
+  }
   
 
   return(
     <div>
       <form onSubmit={onSubmit}>
+        <p>
+        <label htmlFor="content">내용</label>
         <input type="text" name="post" value={post} placeholder='포스트 쓰기' onChange={onChange}></input>
+        </p>
+        <p>
+        <label htmlFor="attachment">첨부이미지</label>
+        <input type="file" accept="images/*" onChange={onPreviewImgChange}/>
+        {attachment && 
+        <>
+          <img src={attachment} alt="" width="50" height="50"/>
+          <button type='button' onClick={onPreviewImgClear}>이미지취소</button>
+        </>
+        }
+        </p>
         <input type="submit" value="입력"></input>
       </form>
       <ul>
