@@ -1,7 +1,7 @@
 import React,{useEffect, useState} from 'react';
 import { db } from '../firebase';
 import { collection, addDoc, serverTimestamp, onSnapshot,query,orderBy } from "firebase/firestore"; 
-import { getStorage, ref } from "firebase/storage";
+import { getStorage, ref, uploadString, getDownloadURL   } from "firebase/storage";
 import { v4 as uuidv4 } from 'uuid';
 import Post from '../components/Post';
 
@@ -23,22 +23,29 @@ const Home = ({userObj})=>{
     e.preventDefault();
     //참조만들기
     const storage = getStorage();
-    // const imagesRef = ref(storage, 'images'); //경로지정
     const storageRef = ref(storage, `${userObj}/${uuidv4()}`); //이참조는 저파일이라고 알려줌
+    
+    uploadString(storageRef, attachment, 'data_url').then(async(snapshot) => {
+      console.log('파일 업로드 성공');
+      const attachtmentUrl =await getDownloadURL(storageRef);
+      // console.log(attachtmentUrl);
+      try{
+        // const docRef = await addDoc(collection(db, "posts"), {
+          await addDoc(collection(db, "posts"), {
+          content: post,
+          date: serverTimestamp(),
+          uid: userObj,
+          attachtmentUrl
+        });
+        // console.log("Document written with ID: ", docRef.id);
+        setPost("");
+      } catch(e){
+      console.log(e);
+    }
+    });
 
 
-
-    // try{
-    //     const docRef = await addDoc(collection(db, "posts"), {
-    //       content: post,
-    //       date: serverTimestamp(),
-    //       uid: userObj
-    //     });
-    //     // console.log("Document written with ID: ", docRef.id);
-    //     setPost("");
-    //   } catch(e){
-    //   // console.log(e);
-    // }
+    
   }
  
   useEffect(()=>{
